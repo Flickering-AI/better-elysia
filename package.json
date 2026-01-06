@@ -9,7 +9,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/ldystudio/better-elysia.git"
+        "url": "git+https://github.com/Flickering-AI/better-elysia.git"
     },
     "main": "index.ts",
     "module": "index.ts",
