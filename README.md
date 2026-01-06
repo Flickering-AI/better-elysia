@@ -24,7 +24,7 @@ To bootstrap the application
 # Bootstrap
 
 ```
-import { ElysiaFactory, LoggerService } from 'better-elysia';
+import { ElysiaFactory, LoggerService } from '@flickering/better-elysia';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -48,7 +48,7 @@ bootstrap();
 Add your controllers here
 
 ```
-import { Module } from 'better-elysia';
+import { Module } from '@flickering/better-elysia';
 import { AuthController } from './modules/auth/auth.controller';
 import { ChatWebsocket } from './modules/chat/chat.websocket';
 
@@ -63,7 +63,7 @@ export class AppModule {}
 **Example:**
 
 ```
-import { ApiTag, Controller, Get, Post } from 'better-elysia';
+import { ApiTag, Controller, Get, Post } from '@flickering/better-elysia';
 
 @ApiTag('Auth')
 @Controller('/api/auth')
@@ -80,7 +80,7 @@ Create a schema file `auth.schema.ts`
 **Example:**
 
 ```
-import { t } from 'better-elysia';
+import { t } from '@flickering/better-elysia';
 
 export namespace AuthSchema {
 	export const Signin = t.Object({
@@ -96,7 +96,7 @@ and use it in the controller
 **Example:**
 
 ```
-import { ApiTag, Body, Controller, Post } from 'better-elysia';
+import { ApiTag, Body, Controller, Post } from '@flickering/better-elysia';
 import { AuthSchema } from './auth.schema';
 
 @ApiTag('Auth')
@@ -112,7 +112,7 @@ Same works for query too
 **Example:**
 
 ```
-import { ApiTag, Controller, Post, Query } from 'better-elysia';
+import { ApiTag, Controller, Post, Query } from '@flickering/better-elysia';
 import { AuthSchema } from './auth.schema';
 
 @ApiTag('Auth')
@@ -123,12 +123,12 @@ export class AuthController {
 }
 ```
 
-For params
+For param
 
 **Example:**
 
 ```
-import { ApiTag, Controller, Get, Param } from 'better-elysia';
+import { ApiTag, Controller, Get, Param } from '@flickering/better-elysia';
 
 @ApiTag('Auth')
 @Controller('/api/auth')
@@ -136,6 +136,23 @@ export class AuthController {
 	@Get('/:id')
 	async getById(@Param('id') id: string) {
 		console.log(id);
+	}
+}
+```
+
+For params
+
+**Example:**
+
+```
+import { ApiTag, Controller, Get, Params } from '@flickering/better-elysia';
+
+@ApiTag('Auth')
+@Controller('/api/auth')
+export class AuthController {
+	@Get('/:id')
+	async getById(@Params() params: string[]) {
+		console.log(params);
 	}
 }
 ```
@@ -149,7 +166,7 @@ For streaming use `GeneratorFunctions`
 This will stream numbers from 0 to 9999
 
 ```
-import { ApiTag, Controller, Get } from 'better-elysia';
+import { ApiTag, Controller, Get } from '@flickering/better-elysia';
 
 @ApiTag('Auth')
 @Controller('/api/auth')
@@ -168,7 +185,7 @@ To make endpoint public and not use auth middleware passed in `ElysiaFactory` us
 **Example:**
 
 ```
-import { ApiTag, Controller, Get, Public } from 'better-elysia';
+import { ApiTag, Controller, Get, Public } from '@flickering/better-elysia';
 
 @ApiTag('Auth')
 @Controller('/api/auth')
@@ -186,7 +203,7 @@ For implementation of websocket use @Websocket decorator
 **Example:**
 
 ```
-import { Close, Message, Open, t, Websocket, LoggerService, type WS } from 'better-elysia';
+import { Close, Message, Open, t, Websocket, LoggerService, type WS } from '@flickering/better-elysia';
 
 const MessageSchema = t.Object({
 	content: t.String(),
@@ -223,7 +240,7 @@ what it will do is make a singleton of the class and inject the singleton to all
 **Example:**
 
 ```
-import { Service } from 'better-elysia';
+import { Service } from '@flickering/better-elysia';
 
 @Service()
 export class UserService {
@@ -238,7 +255,7 @@ Now use it anywhere
 **Example:**
 
 ```
-import { ApiTag, Controller, Get } from 'better-elysia';
+import { ApiTag, Controller, Get } from '@flickering/better-elysia';
 import { UserService } from './auth.service';
 
 @ApiTag('Auth')
@@ -254,7 +271,7 @@ export class AuthController {
 ```
 
 ```
-import { Close, Message, Open, t, Websocket, type WS } from 'better-elysia';
+import { Close, Message, Open, t, Websocket, type WS } from '@flickering/better-elysia';
 import { UserService } from '../auth/auth.service';
 
 const MessageSchema = t.Object({
@@ -291,7 +308,7 @@ To make your own custom parameter decorator use `createCustomParameterDecorator`
 **UseCase and Example:**
 
 ```
-import { createCustomParameterDecorator, type Handler } from 'better-elysia';
+import { createCustomParameterDecorator, type Handler } from '@flickering/better-elysia';
 
 export const AuthHandler: Handler = (c) => {
 	// ADD YOUR AUTH LOGIC HERE
@@ -308,7 +325,7 @@ Add you `AuthHandler` in `ElysiaFactory`
 **Example:**
 
 ```
-import { ElysiaFactory, LoggerService } from 'better-elysia';
+import { ElysiaFactory, LoggerService } from '@flickering/better-elysia';
 import { AppModule } from './app.module';
 import { AuthHandler } from './middleware/auth.middleware';
 
@@ -328,7 +345,7 @@ and the custom decorator you just create in Controller
 **Example:**
 
 ```
-import { ApiTag, Controller, Get } from 'better-elysia';
+import { ApiTag, Controller, Get } from '@flickering/better-elysia';
 import { UserService } from './auth.service';
 import { CurrentUser } from '../../middleware/auth.middleware';
 
