@@ -1,3 +1,7 @@
+<p align="center"> 
+    <img src="https://raw.githubusercontent.com/Aikoyori/ProgrammingVTuberLogos/main/ElysiaJS/ElysiaJSLogoShadowed.png" alt="ElysiaJSLogoShadowed.png" />
+</p>
+
 # Better Elysia
 
 Better Elysia is an npm package that enhances the already fun and lightweight Elysia.js framework by introducing powerful decorators to simplify and streamline your development process. With this package, you can enjoy a more expressive and organized way to define routes, middleware, and more, making your Elysia.js experience even more enjoyable and productive.
