@@ -223,6 +223,19 @@ describe("factory options", () => {
         expect(await (await factoryApp.handle(request("/plugin"))).text()).toBe("plugin")
     })
 
+    test("enables CORS and OpenAPI documentation", async () => {
+        const factoryApp = await ElysiaFactory.create(TestModule, {
+            cors: { origin: "https://example.com" },
+            swagger: { provider: "scalar", version: "latest" }
+        })
+        const corsResponse = await factoryApp.handle(request("/api/get", { headers: { origin: "https://example.com" } }))
+        const openapiResponse = await factoryApp.handle(request("/openapi/json"))
+
+        expect(corsResponse.headers.get("access-control-allow-origin")).toBe("https://example.com")
+        expect(openapiResponse.status).toBe(200)
+        expect((await openapiResponse.json()).paths["/api/get"]).toBeDefined()
+    })
+
     test("protects routes and lets Public bypass auth", async () => {
         const denied = await authApp.handle(request("/auth/protected"))
         const allowed = await authApp.handle(request("/auth/protected", { headers: { authorization: "Bearer test" } }))

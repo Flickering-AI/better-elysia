@@ -37,7 +37,7 @@ async function bootstrap() {
 		response: () => {}, // ADD YOUR RESPONSE HANDLER HERE
 		error: () => {}, // ADD YOUR ERROR HANDLER HERE
 		cors: { origin: '*' }, // ADD YOUR CORS CONFIG HERE (it's optional if not passed application won't use cors)
-		swagger: { provider: 'swagger-ui' }, // ADD YOUR SWAGGER CONFIG HERE (it's optional if not passed application won't use swagger)
+		swagger: { provider: 'swagger-ui' }, // ADD YOUR OPENAPI CONFIG HERE (it's optional if not passed application won't expose API docs)
 		beforeStart: [], // ADD all functions you want to run before application starts (example connecting to database)
 	});
 

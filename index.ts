@@ -1,5 +1,5 @@
-import { cors } from "@elysiajs/cors"
-import { type ElysiaSwaggerConfig, swagger } from "@elysiajs/swagger"
+import { type CORSConfig, cors } from "@elysia/cors"
+import { type ElysiaOpenAPIConfig, openapi } from "@elysia/openapi"
 import colors from "colors"
 import { format } from "date-fns"
 import {
@@ -10,8 +10,6 @@ import {
     type EmptyRouteSchema,
     type ErrorHandler,
     type Handler,
-    type HTTPMethod,
-    type MaybeArray,
     type SingletonBase,
     type TSchema,
     t
@@ -24,7 +22,7 @@ type IHttpException = { message: string; status: number }
 type ClassLike = new (...args: any[]) => any
 type ModuleProps = { controllers: ClassLike[] }
 type fc = (...args: any[]) => any
-type Origin = string | RegExp | ((request: Request) => boolean | undefined)
+type ElysiaSwaggerConfig<T extends string = string> = ElysiaOpenAPIConfig<true, T> & { version?: string }
 type ElysiaCreateOptions<T extends string> = {
     cors?: boolean | CORSConfig
     swagger?: boolean | ElysiaSwaggerConfig<T extends string ? T : string>
@@ -55,18 +53,8 @@ type Metadata = {
     customDecorators: { handler: Handler; index: number }[]
 }
 type WS = ElysiaWS
-type CORSConfig = {
-    aot?: boolean
-    origin?: Origin | boolean | Origin[]
-    methods?: boolean | undefined | null | "" | "*" | MaybeArray<HTTPMethod | (string & {})>
-    allowedHeaders?: true | string | string[]
-    exposeHeaders?: true | string | string[]
-    credentials?: boolean
-    maxAge?: number
-    preflight?: boolean
-}
 
-export type { AfterHandler, CORSConfig, Context, ElysiaSwaggerConfig, ErrorHandler, Handler, TSchema, WS }
+export type { AfterHandler, CORSConfig, Context, ElysiaOpenAPIConfig, ElysiaSwaggerConfig, ErrorHandler, Handler, TSchema, WS }
 
 //! LOGGER SERVICE
 function createLogger(serviceName = "ElysiaApplication") {
@@ -153,9 +141,18 @@ const ElysiaFactory = {
 
         if (options?.plugins) for (const plugin of options.plugins) app.use(plugin)
 
-        // SWAGGER SETTING
+        // OPENAPI SETTING
         if (options?.swagger) {
-            app.use(swagger(typeof options.swagger === "object" ? options.swagger : {}))
+            if (typeof options.swagger === "object") {
+                const { version, ...config } = options.swagger
+                if (version) {
+                    if (config.provider === "swagger-ui") config.swagger = { ...config.swagger, version }
+                    else config.scalar = { ...config.scalar, version }
+                }
+                app.use(openapi(config))
+            } else {
+                app.use(openapi())
+            }
         }
 
         if (options?.error) {
