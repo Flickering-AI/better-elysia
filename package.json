@@ -16,6 +16,8 @@
     "type": "module",
     "scripts": {
         "dev": "bun --watch index.ts",
+        "test": "bun test",
+        "test:coverage": "bun test --coverage",
         "build": "bun build index.ts --outdir best-js --minify",
         "release": "npm publish --access public"
     },
