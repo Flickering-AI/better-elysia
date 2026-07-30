@@ -113,7 +113,7 @@ import { UserController } from './user/user.controller'
 export class AppModule {}
 ```
 
-Use `@Query(schema)`, `@Param(name)`, `@Params()`, and `@RawContext()` for query, named path parameters, wildcard path segments, and the full Elysia context. Use `Get`, `Post`, `Put`, `Patch`, and `Delete` for route methods.
+Use `@Query(schema)`, `@Param(name, schema?)`, `@Params()`, and `@RawContext()` for query, named path parameters, wildcard path segments, and the full Elysia context. Pass a schema such as `@Param('id', t.Number())` when Elysia must validate and convert a path parameter. Use `Get`, `Post`, `Put`, `Patch`, and `Delete` for route methods.
 
 ## Optional Features
 

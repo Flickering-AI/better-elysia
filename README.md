@@ -132,13 +132,13 @@ For param
 **Example:**
 
 ```
-import { ApiTag, Controller, Get, Param } from '@flickering/better-elysia';
+import { ApiTag, Controller, Get, Param, t } from '@flickering/better-elysia';
 
 @ApiTag('Auth')
 @Controller('/api/auth')
 export class AuthController {
 	@Get('/:id')
-	async getById(@Param('id') id: string) {
+	async getById(@Param('id', t.Number()) id: number) {
 		console.log(id);
 	}
 }

@@ -79,7 +79,7 @@ class TestController {
     }
 
     @Get("/lookup/:id/*")
-    lookup(@Param("id") id: string, @Params() rest: string[], @Query(Search) query: typeof Search.static) {
+    lookup(@Param("id", t.Number()) id: number, @Params() rest: string[], @Query(Search) query: typeof Search.static) {
         return { id, rest, page: query.page }
     }
 
@@ -177,7 +177,13 @@ describe("HTTP decorators", () => {
         const response = await app.handle(request("/api/lookup/42/a/b?page=2"))
 
         expect(response.status).toBe(200)
-        expect(await response.json()).toEqual({ id: "42", rest: ["a", "b"], page: 2 })
+        expect(await response.json()).toEqual({ id: 42, rest: ["a", "b"], page: 2 })
+    })
+
+    test("rejects an invalid path parameter", async () => {
+        const response = await app.handle(request("/api/lookup/not-a-number/a?page=2"))
+
+        expect(response.status).toBe(422)
     })
 
     test("injects raw context and a custom parameter", async () => {
