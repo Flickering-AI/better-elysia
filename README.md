@@ -127,6 +127,28 @@ export class AuthController {
 }
 ```
 
+Headers can also be injected and validated:
+
+```ts
+const AuthHeaders = t.Object({ authorization: t.String() });
+
+@Get('/profile')
+profile(@Headers(AuthHeaders) headers: typeof AuthHeaders.static) {
+	return headers.authorization;
+}
+```
+
+Use `@Request` when a controller only needs the native request instead of the entire Elysia context:
+
+```ts
+@Get('/profile')
+profile(@Request() request: globalThis.Request) {
+	return request.headers.get('authorization');
+}
+```
+
+When the same file constructs a native request, use `new globalThis.Request(...)` or import the decorator with an alias.
+
 For param
 
 **Example:**

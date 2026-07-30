@@ -46,6 +46,7 @@ type Metadata = {
     handler: (...args: unknown[]) => unknown
     bodySchema?: { schema?: TSchema; index: number }
     querySchema?: { schema?: TSchema; index: number }
+    headersSchema?: { schema?: TSchema; index: number }
     paramSlug?: { slug: string; schema?: TSchema; index: number }
     params?: { slug: "*"; index: number }
     rawContext?: { index: number }
@@ -123,6 +124,8 @@ const createCustomParameterDecorator = (handler: Handler) => {
     }
 }
 
+const Request = () => createCustomParameterDecorator(({ request }) => request)
+
 //! Elysia Factory
 const ElysiaFactory = {
     create: async <T extends string>(module: ClassLike, options?: ElysiaCreateOptions<T>): Promise<Elysia<T>> => {
@@ -191,6 +194,7 @@ const httpMethodMetadataSetter = (props: HttpMethodMetadataSetterProps) => {
     const paramSlug = Reflect.getMetadata("param", props.handler)
     const params = Reflect.getMetadata("params", props.handler)
     const querySchema = Reflect.getMetadata("query", props.handler)
+    const headersSchema = Reflect.getMetadata("headers", props.handler)
     const rawContext = Reflect.getMetadata("rawContext", props.handler)
     const customDecorators = Reflect.getMetadata("customDecorators", props.handler) || []
     const isPublic = Reflect.getMetadata("public", props.handler)
@@ -205,6 +209,7 @@ const httpMethodMetadataSetter = (props: HttpMethodMetadataSetterProps) => {
         paramSlug,
         params,
         querySchema,
+        headersSchema,
         customDecorators,
         rawContext,
         isPublic,
@@ -260,6 +265,9 @@ const Controller = (prefix: string) => {
                     if (eachMetadata.querySchema) {
                         parameters[eachMetadata.querySchema.index] = c.query
                     }
+                    if (eachMetadata.headersSchema) {
+                        parameters[eachMetadata.headersSchema.index] = c.headers
+                    }
                     if (eachMetadata.paramSlug) {
                         parameters[eachMetadata.paramSlug.index] = c.params?.[eachMetadata.paramSlug.slug]
                     }
@@ -304,6 +312,7 @@ const Controller = (prefix: string) => {
                           )
                         : undefined,
                     query: eachMetadata.querySchema?.schema as any,
+                    headers: eachMetadata.headersSchema?.schema,
                     detail: !options?.auth || eachMetadata.isPublic ? { security: [] } : { security: [{ BearerAuth: [] }] }
                 })
 
@@ -484,6 +493,12 @@ const Params = () => {
 const Query = (schema?: TSchema) => {
     return (target: any, propertyKey: string, parameterIndex: number) => {
         Reflect.defineMetadata("query", { schema, index: parameterIndex }, target[propertyKey])
+    }
+}
+
+const Headers = (schema?: TSchema) => {
+    return (target: any, propertyKey: string, parameterIndex: number) => {
+        Reflect.defineMetadata("headers", { schema, index: parameterIndex }, target[propertyKey])
     }
 }
 
@@ -683,6 +698,7 @@ export {
     Delete,
     ElysiaFactory,
     Get,
+    Headers,
     HttpStatus,
     LoggerService,
     Message,
@@ -696,6 +712,7 @@ export {
     Put,
     Query,
     RawContext,
+    Request,
     Service,
     t,
     Websocket

@@ -82,7 +82,7 @@ export class UserService {
 Keep transport concerns in controllers:
 
 ```ts
-import { ApiTag, Body, Controller, Get, Param, Post } from '@flickering/better-elysia'
+import { ApiTag, Body, Controller, Get, Param, Post, Request } from '@flickering/better-elysia'
 import { CreateUserBody, type CreateUserBody as CreateUserInput } from './user.schema'
 import { UserService } from './user.service'
 
@@ -92,7 +92,7 @@ export class UserController {
   constructor(private readonly users: UserService) {}
 
   @Get('/:id')
-  find(@Param('id') id: string) {
+  find(@Param('id') id: string, @Request() request: globalThis.Request) {
     return { id }
   }
 
@@ -113,7 +113,7 @@ import { UserController } from './user/user.controller'
 export class AppModule {}
 ```
 
-Use `@Query(schema)`, `@Param(name, schema?)`, `@Params()`, and `@RawContext()` for query, named path parameters, wildcard path segments, and the full Elysia context. Pass a schema such as `@Param('id', t.Number())` when Elysia must validate and convert a path parameter. Use `Get`, `Post`, `Put`, `Patch`, and `Delete` for route methods.
+Use `@Query(schema)`, `@Headers(schema?)`, `@Param(name, schema?)`, `@Params()`, `@Request()`, and `@RawContext()` for query, headers, named path parameters, wildcard path segments, the native request, and the full Elysia context. Pass a schema such as `@Param('id', t.Number())` when Elysia must validate and convert a path parameter. Because the decorator shadows the Web `Request` constructor when imported by name, use `new globalThis.Request(...)` in the same file or alias the decorator import. Use `Get`, `Post`, `Put`, `Patch`, and `Delete` for route methods.
 
 ## Optional Features
 
@@ -165,7 +165,7 @@ Convert routes feature by feature:
 
 1. Move inline validation to exported `t` schemas without changing constraints.
 2. Move reusable handler logic into a `@Service()`; leave one-off logic in the controller.
-3. Map context fields to parameter decorators. Use `@RawContext()` when no narrower decorator preserves behavior.
+3. Map context fields to parameter decorators. Use `@Request()` for the native request and `@RawContext()` when no narrower decorator preserves behavior.
 4. Replace route hooks with factory-level hooks or auth only when their scope is truly global.
 5. Register the controller in `@Module`, remove the migrated native route, and verify parity before continuing.
 

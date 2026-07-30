@@ -11,6 +11,7 @@ import {
     ElysiaFactory,
     ForbiddenException,
     Get,
+    Headers,
     HttpException,
     HttpStatus,
     LoggerService,
@@ -27,6 +28,7 @@ import {
     Put,
     Query,
     RawContext,
+    Request,
     Service,
     t,
     UnauthorizedException,
@@ -34,12 +36,13 @@ import {
     type WS
 } from "../index"
 
-const request = (path: string, init?: RequestInit) => new Request(`http://localhost${path}`, init)
+const request = (path: string, init?: RequestInit) => new globalThis.Request(`http://localhost${path}`, init)
 
 const Header = createCustomParameterDecorator(({ request }) => request.headers.get("x-test"))
 
 const Payload = t.Object({ value: t.String({ minLength: 1 }) })
 const Search = t.Object({ page: t.Numeric({ minimum: 1 }) })
+const RequestHeaders = t.Object({ "x-api-key": t.String({ minLength: 1 }) })
 
 @Service()
 class TestService {
@@ -93,6 +96,16 @@ class TestController {
         yield "first"
         yield "second"
     }
+
+    @Get("/headers")
+    headers(@Headers(RequestHeaders) headers: typeof RequestHeaders.static) {
+        return headers["x-api-key"]
+    }
+
+    @Get("/request")
+    request(@Request() request: globalThis.Request) {
+        return { method: request.method, path: new URL(request.url).pathname }
+    }
 }
 
 @Controller("/auth")
@@ -132,7 +145,7 @@ class SocketModule {}
 
 const app = await ElysiaFactory.create(TestModule)
 const authApp = await ElysiaFactory.create(AuthModule, {
-    auth: ({ headers }) => (headers.authorization ? undefined : new Response("Unauthorized", { status: 401 }))
+    auth: ({ headers }) => (headers.authorization ? undefined : new globalThis.Response("Unauthorized", { status: 401 }))
 })
 
 describe("HTTP decorators", () => {
@@ -190,6 +203,20 @@ describe("HTTP decorators", () => {
         const response = await app.handle(request("/api/context", { headers: { "x-test": "custom" } }))
 
         expect(await response.json()).toEqual({ path: "/api/context", header: "custom" })
+    })
+
+    test("injects and validates headers", async () => {
+        const valid = await app.handle(request("/api/headers", { headers: { "x-api-key": "secret" } }))
+        const invalid = await app.handle(request("/api/headers"))
+
+        expect(await valid.text()).toBe("secret")
+        expect(invalid.status).toBe(422)
+    })
+
+    test("injects the native request", async () => {
+        const response = await app.handle(request("/api/request"))
+
+        expect(await response.json()).toEqual({ method: "GET", path: "/api/request" })
     })
 
     test("streams values from an async generator", async () => {
