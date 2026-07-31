@@ -11,8 +11,8 @@ Use Bun and `@flickering/better-elysia`. Treat this repository's `index.ts` as t
 
 1. Inspect the target project's `package.json`, `tsconfig.json`, entry point, routes, middleware, and tests before editing.
 2. Choose the path:
-   - For a new app, initialize the minimum files described below.
-   - For a migration, inventory every existing route, method, path, schema, hook, dependency, and WebSocket before converting it.
+    - For a new app, initialize the minimum files described below.
+    - For a migration, inventory every existing route, method, path, schema, hook, dependency, and WebSocket before converting it.
 3. Implement one vertical slice first: schema, service if needed, controller, module registration, then bootstrap.
 4. Add auth, `@Public()`, Swagger, CORS, plugins, streaming, or WebSockets only when required.
 5. Run the target project's existing checks. At minimum run `bunx tsc --noEmit` and exercise one representative route.
@@ -32,27 +32,27 @@ Merge these required compiler options into the existing `tsconfig.json`; do not 
 
 ```json
 {
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "moduleResolution": "bundler",
-    "module": "ESNext",
-    "target": "ESNext",
-    "strict": true,
-    "noEmit": true,
-    "types": ["bun"]
-  }
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "moduleResolution": "bundler",
+        "module": "ESNext",
+        "target": "ESNext",
+        "strict": true,
+        "noEmit": true,
+        "types": ["bun"]
+    }
 }
 ```
 
 Use a thin entry point:
 
 ```ts
-import { ElysiaFactory, LoggerService } from '@flickering/better-elysia'
-import { AppModule } from './app.module'
+import { ElysiaFactory, LoggerService } from '@flickering/better-elysia';
+import { AppModule } from './app.module';
 
-const app = await ElysiaFactory.create(AppModule)
-app.listen(3000, () => LoggerService.log('Listening on http://localhost:3000'))
+const app = await ElysiaFactory.create(AppModule);
+app.listen(3000, () => LoggerService.log('Listening on http://localhost:3000'));
 ```
 
 ## Build The Core
@@ -60,54 +60,54 @@ app.listen(3000, () => LoggerService.log('Listening on http://localhost:3000'))
 Define schemas beside their feature and derive types from the same schema:
 
 ```ts
-import { t } from '@flickering/better-elysia'
+import { t } from '@flickering/better-elysia';
 
-export const CreateUserBody = t.Object({ name: t.String({ minLength: 1 }) })
-export type CreateUserBody = typeof CreateUserBody.static
+export const CreateUserBody = t.Object({ name: t.String({ minLength: 1 }) });
+export type CreateUserBody = typeof CreateUserBody.static;
 ```
 
 Use `@Service()` only for shared state or reusable business logic. Services are singletons and must carry `@Service()` before constructor injection into a controller.
 
 ```ts
-import { Service } from '@flickering/better-elysia'
+import { Service } from '@flickering/better-elysia';
 
 @Service()
 export class UserService {
-  create(input: { name: string }) {
-    return { id: crypto.randomUUID(), ...input }
-  }
+    create(input: { name: string }) {
+        return { id: crypto.randomUUID(), ...input };
+    }
 }
 ```
 
 Keep transport concerns in controllers:
 
 ```ts
-import { ApiTag, Body, Controller, Get, Param, Post, Request } from '@flickering/better-elysia'
-import { CreateUserBody, type CreateUserBody as CreateUserInput } from './user.schema'
-import { UserService } from './user.service'
+import { ApiTag, Body, Controller, Get, Param, Post, Request } from '@flickering/better-elysia';
+import { CreateUserBody, type CreateUserBody as CreateUserInput } from './user.schema';
+import { UserService } from './user.service';
 
 @ApiTag('Users')
 @Controller('/users')
 export class UserController {
-  constructor(private readonly users: UserService) {}
+    constructor(private readonly users: UserService) {}
 
-  @Get('/:id')
-  find(@Param('id') id: string, @Request() request: globalThis.Request) {
-    return { id }
-  }
+    @Get('/:id')
+    find(@Param('id') id: string, @Request() request: globalThis.Request) {
+        return { id };
+    }
 
-  @Post()
-  create(@Body(CreateUserBody) body: CreateUserInput) {
-    return this.users.create(body)
-  }
+    @Post()
+    create(@Body(CreateUserBody) body: CreateUserInput) {
+        return this.users.create(body);
+    }
 }
 ```
 
 Register every controller and optional WebSocket class in exactly one module:
 
 ```ts
-import { Module } from '@flickering/better-elysia'
-import { UserController } from './user/user.controller'
+import { Module } from '@flickering/better-elysia';
+import { UserController } from './user/user.controller';
 
 @Module({ controllers: [UserController] })
 export class AppModule {}
@@ -121,13 +121,13 @@ Configure cross-cutting behavior once in `ElysiaFactory.create`:
 
 ```ts
 const app = await ElysiaFactory.create(AppModule, {
-  cors: { origin: 'https://example.com' },
-  swagger: true,
-  auth: ({ headers, status }) =>
-    headers.authorization ? undefined : status(401, 'Unauthorized'),
-  plugins: [(app) => app.state('name', 'api')],
-  beforeStart: [connectDatabase]
-})
+    cors: { origin: 'https://example.com' },
+    swagger: true,
+    auth: ({ headers, status }) =>
+        headers.authorization ? undefined : status(401, 'Unauthorized'),
+    plugins: [(app) => app.state('name', 'api')],
+    beforeStart: [connectDatabase],
+});
 ```
 
 - Add `@Public()` only to routes that must bypass a configured `auth` handler.
@@ -139,21 +139,21 @@ const app = await ElysiaFactory.create(AppModule, {
 Add WebSockets only when requested:
 
 ```ts
-import { Message, Open, Websocket, t, type WS } from '@flickering/better-elysia'
+import { Message, Open, Websocket, t, type WS } from '@flickering/better-elysia';
 
-const ChatMessage = t.Object({ text: t.String() })
+const ChatMessage = t.Object({ text: t.String() });
 
 @Websocket('/chat', { public: true })
 export class ChatSocket {
-  @Open()
-  open(ws: WS) {
-    ws.send('connected')
-  }
+    @Open()
+    open(ws: WS) {
+        ws.send('connected');
+    }
 
-  @Message(ChatMessage)
-  message(ws: WS, message: typeof ChatMessage.static) {
-    ws.send(message)
-  }
+    @Message(ChatMessage)
+    message(ws: WS, message: typeof ChatMessage.static) {
+        ws.send(message);
+    }
 }
 ```
 
@@ -181,3 +181,13 @@ bun test
 ```
 
 Confirm at least one valid request, one validation failure, and every migrated route's method and path. When auth is enabled, also confirm one protected route and one `@Public()` route. When WebSockets are enabled, confirm connection and one schema-valid message.
+
+## Generate Eden Contract
+
+Decorator metadata exists at runtime, so Eden cannot infer it from `typeof app`. Generate a static contract before frontend type checking or builds:
+
+```bash
+better-elysia --module src/app.ts --out src/eden.generated.ts
+```
+
+Route paths must be string literals or resolvable string constants. Codegen supports HTTP routes, body/query/header/path parameters, wildcard parameters, async generators, and WebSockets. Import only the generated `App` type in the Eden client; the generated contract is not a runtime server.

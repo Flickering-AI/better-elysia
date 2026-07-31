@@ -1,4 +1,7 @@
 import { describe, expect, spyOn, test } from "bun:test"
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
+import { join } from "node:path"
+import ts from "typescript"
 import {
     ApiTag,
     BadRequestException,
@@ -11,6 +14,7 @@ import {
     ElysiaFactory,
     ForbiddenException,
     Get,
+    generateContract,
     Headers,
     HttpException,
     HttpStatus,
@@ -134,7 +138,7 @@ class TestSocket {
     close(_ws: WS) {}
 }
 
-@Module({ controllers: [TestController] })
+@Module({ controllers: [TestController, TestSocket] })
 class TestModule {}
 
 @Module({ controllers: [AuthController] })
@@ -319,5 +323,52 @@ describe("LoggerService", () => {
         expect(output.join(" ")).toContain("ready")
         expect(output.join(" ")).toContain("failed")
         expect(output.join(" ")).toContain("details")
+    })
+})
+
+describe("Eden contract codegen", () => {
+    test("generates typed HTTP and WebSocket routes", async () => {
+        const directory = await mkdtemp(join(import.meta.dir, ".generated-"))
+        const out = join(directory, "eden.generated.ts")
+
+        try {
+            const result = generateContract({
+                module: import.meta.path,
+                out,
+                tsconfig: join(import.meta.dir, "../tsconfig.json")
+            })
+            const generated = await readFile(out, "utf8")
+
+            expect(result.routes).toBe(10)
+            expect(result.sockets).toBe(1)
+            expect(generated).toContain('.post("/api/body"')
+            expect(generated).toContain("body: schema<{ value: string; }>()")
+            expect(generated).toContain('.ws("/socket"')
+            expect(generated).toContain("export type App = typeof contract")
+
+            const typeTest = join(directory, "eden.type-test.ts")
+            await writeFile(
+                typeTest,
+                [
+                    'import { treaty } from "@elysia/eden"',
+                    'import type { App } from "./eden.generated"',
+                    'const api = treaty<App>("http://localhost")',
+                    'api.api.body.post({ value: "ok" })',
+                    "// @ts-expect-error value must be a string",
+                    "api.api.body.post({ value: 1 })",
+                    'api.api.lookup({ id: 1 })["*"].get({ query: { page: 1 } })',
+                    "api.socket.subscribe()"
+                ].join("\n")
+            )
+            const config = ts.readConfigFile(join(import.meta.dir, "../tsconfig.json"), ts.sys.readFile)
+            const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, join(import.meta.dir, ".."))
+            const diagnostics = ts.getPreEmitDiagnostics(
+                ts.createProgram({ rootNames: [out, typeTest], options: parsed.options })
+            )
+
+            expect(diagnostics.map((item) => ts.flattenDiagnosticMessageText(item.messageText, "\n"))).toEqual([])
+        } finally {
+            await rm(directory, { recursive: true })
+        }
     })
 })

@@ -55,6 +55,7 @@ type Metadata = {
 }
 type WS = ElysiaWS
 
+export { type GenerateContractOptions, generateContract } from "./codegen.js"
 export type { AfterHandler, CORSConfig, Context, ElysiaOpenAPIConfig, ElysiaSwaggerConfig, ErrorHandler, Handler, TSchema, WS }
 
 //! LOGGER SERVICE
