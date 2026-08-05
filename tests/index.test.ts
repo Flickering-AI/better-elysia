@@ -1,6 +1,7 @@
 import { describe, expect, spyOn, test } from "bun:test"
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
 import { join } from "node:path"
+import { t } from "elysia"
 import ts from "typescript"
 import {
     ApiTag,
@@ -34,7 +35,6 @@ import {
     RawContext,
     Request,
     Service,
-    t,
     UnauthorizedException,
     Websocket,
     type WS

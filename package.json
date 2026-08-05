@@ -1,6 +1,6 @@
 {
     "name": "@flickering/better-elysia",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "license": "MIT",
     "description": "An extended version of Elysia with decorators and more features",
     "author": {
@@ -29,7 +29,7 @@
         "lint": "biome lint --write .",
         "format": "biome format --write .",
         "check": "biome check --write --unsafe .",
-        "prepublishOnly": "bun check && bun test && bun run build",
+        "prepublishOnly": "bun check && bun test && bunx tsc --noEmit && bun run build",
         "release": "npm publish"
     },
     "dependencies": {

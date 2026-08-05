@@ -688,8 +688,6 @@ export class MethodNotAllowedException extends HttpException {
     }
 }
 
-//! EXPORTS
-export * from "elysia"
 export {
     ApiTag,
     Body,
@@ -715,6 +713,5 @@ export {
     RawContext,
     Request,
     Service,
-    t,
     Websocket
 }
