@@ -7,6 +7,7 @@
       "dependencies": {
         "@elysia/cors": "^1.4.2",
         "@elysia/openapi": "^1.4.15",
+        "@flickering/http-status": "^1.0.0",
         "colors": "^1.4.0",
         "date-fns": "^4.4.0",
         "reflect-metadata": "^0.2.2",
@@ -48,6 +49,8 @@
     "@elysia/eden": ["@elysia/eden@1.4.10", "", { "peerDependencies": { "elysia": ">=1.4.19" } }, "sha512-vcZXQcW6wZj6rhTxaiTkuCbVuS/yAJQ9jqCM6b83a5hu99F5Aj3HOyWXL17iod2Rz+pJpYsQGX0XaeoCsMpw2g=="],
 
     "@elysia/openapi": ["@elysia/openapi@1.4.15", "", { "peerDependencies": { "elysia": ">= 1.4.0" } }, "sha512-MrVGCPo5hnRF4/yWGOyH5ddjt4DlSIbeC5rrkupQtHY8TEQe+XdJa2YM9aUOrtgtRcy4UNGyiVlLl/jllPkPQA=="],
+
+    "@flickering/http-status": ["@flickering/http-status@1.0.0", "http://w-npm.flickering.cn/@flickering%2fhttp-status/-/http-status-1.0.0.tgz", {}, "sha512-ge4guNqc5mPRAXg6SFpEm+5zsAxji5qqdL7iTTeSRCJ7JiSiUU2Go7/s4seAITaXfNytiEigMosCp6NKlFHtRg=="],
 
     "@sinclair/typebox": ["@sinclair/typebox@0.34.46", "", {}, "sha512-kiW7CtS/NkdvTUjkjUJo7d5JsFfbJ14YjdhDk9KoEgK6nFjKNXZPrX0jfLA8ZlET4cFLHxOZ/0vFKOP+bOxIOQ=="],
 

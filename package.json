@@ -1,6 +1,6 @@
 {
     "name": "@flickering/better-elysia",
-    "version": "1.4.2",
+    "version": "1.5.0",
     "license": "MIT",
     "description": "An extended version of Elysia with decorators and more features",
     "author": {
@@ -19,10 +19,6 @@
         ".": {
             "types": "./dist/index.d.ts",
             "default": "./dist/index.js"
-        },
-        "./http-status": {
-            "types": "./dist/http-status.d.ts",
-            "default": "./dist/http-status.js"
         }
     },
     "bin": {
@@ -44,6 +40,7 @@
         "release": "npm publish"
     },
     "dependencies": {
+        "@flickering/http-status": "^1.0.0",
         "@elysia/cors": "^1.4.2",
         "@elysia/openapi": "^1.4.15",
         "colors": "^1.4.0",

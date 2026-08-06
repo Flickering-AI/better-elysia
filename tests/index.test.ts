@@ -1,6 +1,7 @@
 import { describe, expect, spyOn, test } from "bun:test"
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
 import { join } from "node:path"
+import { HttpStatus } from "@flickering/http-status"
 import { t } from "elysia"
 import ts from "typescript"
 import {
@@ -18,7 +19,6 @@ import {
     generateContract,
     Headers,
     HttpException,
-    HttpStatus,
     LoggerService,
     Message,
     MethodNotAllowedException,

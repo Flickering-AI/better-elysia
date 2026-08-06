@@ -1,5 +1,6 @@
 import { type CORSConfig, cors } from "@elysia/cors"
 import { type ElysiaOpenAPIConfig, openapi } from "@elysia/openapi"
+import { HttpStatus } from "@flickering/http-status"
 import colors from "colors"
 import { format } from "date-fns"
 import {
@@ -15,7 +16,6 @@ import {
     t
 } from "elysia"
 import type { ElysiaWS } from "elysia/ws"
-import { HttpStatus } from "./http-status.js"
 import "reflect-metadata"
 
 //! TYPES
@@ -565,7 +565,6 @@ export {
     ElysiaFactory,
     Get,
     Headers,
-    HttpStatus,
     LoggerService,
     Message,
     Module,
