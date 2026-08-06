@@ -1,6 +1,6 @@
 {
     "name": "@flickering/better-elysia",
-    "version": "1.4.1",
+    "version": "1.4.2",
     "license": "MIT",
     "description": "An extended version of Elysia with decorators and more features",
     "author": {
@@ -14,6 +14,17 @@
     "main": "dist/index.js",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
+    "sideEffects": false,
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./http-status": {
+            "types": "./dist/http-status.d.ts",
+            "default": "./dist/http-status.js"
+        }
+    },
     "bin": {
         "better-elysia": "dist/cli.js"
     },
